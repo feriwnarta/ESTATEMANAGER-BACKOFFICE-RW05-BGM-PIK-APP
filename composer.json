@@ -1,0 +1,16 @@
+{
+    "name": "next-g/rw-admin-app",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "NextG\\RwAdminApp\\": "app"
+        }
+    },
+    "authors": [
+        {
+            "name": "feriwnarta",
+            "email": "feriwnarta26@gmail.com"
+        }
+    ],
+    "require": {}
+}
