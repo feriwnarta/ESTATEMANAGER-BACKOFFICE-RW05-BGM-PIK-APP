@@ -27,10 +27,11 @@ class UserServiceImpl implements UserService
 
         try {
             // dapatkan data user dari db
-            $query = 'SELECT id_user, id_auth, username, email, no_telp, name, profile_image FROM tb_user LIMIT :limit OFFSET :start';
+            // $query = 'SELECT id_user, id_auth, username, email, no_telp, name, profile_image FROM tb_user LIMIT :limit OFFSET :start';
+            $query = 'SELECT id_user, id_auth, username, email, no_telp, name, profile_image FROM tb_user';
             $this->db->query($query);
-            $this->db->bindData(':limit', $limit);
-            $this->db->bindData(':start', $start);
+            // $this->db->bindData(':limit', $limit);
+            // $this->db->bindData(':start', $start);
 
             $users =  ($this->db->fetchAll() == null) ? [] : $this->db->fetchAll();
             
