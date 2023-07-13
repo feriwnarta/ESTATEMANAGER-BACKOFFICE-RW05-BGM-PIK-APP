@@ -25,6 +25,13 @@ class Database
         }
     }
 
+    public function startTransaction()
+    {
+        if (!$this->conn->inTransaction()) {
+            $this->conn->beginTransaction();
+        }
+    }
+
     public function commit()
     {
         if ($this->conn->inTransaction()) {

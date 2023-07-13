@@ -6,6 +6,7 @@ class User {
 
     private string $idUser;
     private string $idAuth;
+    private string $status;
     private string $userName;
     private string $email;
     private string $noTelp;
@@ -14,16 +15,19 @@ class User {
 
     
     
-    public function __construct($idUser, $idAuth, $userName, $email, $noTelp, $name, $profileImage) {
+    public function __construct($idUser, $idAuth, $status, $userName, $email, $noTelp, $name, $profileImage) {
 
         $this->idUser = $idUser;
         $this->idAuth = $idAuth;
+        $this->status = $status;
         $this->userName = $userName;
         $this->email = $email;
         $this->noTelp = $noTelp;
         $this->name = $name;
         $this->profileImage = $profileImage;
     }
+
+    
 
 
 
@@ -149,6 +153,24 @@ class User {
     public function setProfileImage(string $profileImage): self
     {
         $this->profileImage = $profileImage;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of status
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set the value of status
+     */
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }
