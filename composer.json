@@ -12,5 +12,7 @@
             "email": "feriwnarta26@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "webpatser/laravel-uuid": "^4.0"
+    }
 }

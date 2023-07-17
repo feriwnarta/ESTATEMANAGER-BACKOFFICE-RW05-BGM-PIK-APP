@@ -7,6 +7,10 @@ namespace Composer\Autoload;
 class ComposerStaticInitdedfcea0bce76ef0b8347489352d043a
 {
     public static $prefixLengthsPsr4 = array (
+        'W' => 
+        array (
+            'Webpatser\\Uuid\\' => 15,
+        ),
         'N' => 
         array (
             'NextG\\RwAdminApp\\' => 17,
@@ -14,6 +18,10 @@ class ComposerStaticInitdedfcea0bce76ef0b8347489352d043a
     );
 
     public static $prefixDirsPsr4 = array (
+        'Webpatser\\Uuid\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/webpatser/laravel-uuid/src/Webpatser/Uuid',
+        ),
         'NextG\\RwAdminApp\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',

@@ -6,6 +6,7 @@ use NextG\RwAdminApp\App\Database;
 use NextG\RwAdminApp\Entity\User;
 use NextG\RwAdminApp\Services\UserServices\UserService;
 use PDOException;
+use Webpatser\Uuid\Uuid;
 
 class UserServiceImpl implements UserService
 {
@@ -13,9 +14,264 @@ class UserServiceImpl implements UserService
     private $db;
 
 
+
     public function __construct()
     {
         $this->db = new Database;
+    }
+
+    public function saveEmployee()
+    {
+        $json = file_get_contents('php://input');
+        $obj = json_decode($json, true);
+
+        if (!isset($obj) && empty($obj)) {
+            http_response_code(400);
+            echo json_encode('parameter empty', JSON_PRETTY_PRINT);
+        }
+
+
+        $username = $obj['username'];
+        $name = $obj['name'];
+        $email = $obj['email'];
+        $phoneNumber = $obj['phoneNumber'];
+        $idPosition = $obj['bagian'];
+        $password = $obj['password'];
+        $divisi = $obj['divisi'];
+
+
+        /**
+         * password hashing
+         */
+        $ubah1 = str_replace("=", "", base64_encode($password));
+        $pengacak = "Bl4ck3rH4ck3r3ncR1pt";
+        $ubah2 = md5($pengacak . md5($ubah1) . $pengacak);
+        $hasil_password = md5($pengacak . md5($ubah2) . $pengacak);
+
+
+        $division = '';
+        $idMasterCategory = '';
+        $scope = '';
+        $unit = '';
+
+        if ($divisi == 'radioPerawatanLanskap') {
+            $scope = 'Landscape';
+            $unit = 'Pertamanan, kebersihan, dan clubhouse';
+        }
+
+        try {
+            $this->db->startTransaction();
+
+            // simpan employee landscape
+            $queryDivisionLandscape = "SELECT id_division, divisi FROM tb_division WHERE divisi IN ('{$scope}')";
+
+            $this->db->query($queryDivisionLandscape);
+            $division = $this->db->fetch();
+            if (empty($division)) {
+            }
+
+            $idMasterCategory = $this->getIdMasterCategory($unit)['id_master_category'];
+
+            $idUser = Uuid::generate()->string;
+            $position = $this->getPositionName($idPosition)['position'];
+            $idAuth = $this->getIdAuth($position)['id_auth'];
+
+            if ($idAuth == '' || $idAuth == null) {
+                http_response_code(400);
+                echo json_encode(
+                    array(
+                        "message" => "auth not exist"
+                    ),
+                    JSON_PRETTY_PRINT
+                );
+                return;
+            }
+
+
+            $usernameExist = $this->checkValidUser($username, $email, $phoneNumber);
+
+            if ($usernameExist['count'] > 0) {
+                http_response_code(400);
+                echo json_encode(
+                    array(
+                        "message" => "username or email or phone number exist"
+                    ),
+                    JSON_PRETTY_PRINT
+                );
+                return;
+            }
+
+
+            $resultSaveUser = $this->saveUser($idUser, $idAuth, $email, $username, $phoneNumber, $name, $hasil_password);
+
+
+            if ($resultSaveUser == 0) {
+                http_response_code(400);
+                echo json_encode(
+                    array(
+                        "message" => "failed save user"
+                    ),
+                    JSON_PRETTY_PRINT
+                );
+                return;
+            }
+
+
+            $idDivision = $division['id_division'];
+            $idEmployee = Uuid::generate()->string;
+            $idJob = Uuid::generate()->string;
+
+            
+            $this->saveLandscapeEmployee($idEmployee, $email, $name, $phoneNumber, $idPosition, $idDivision, $idJob);
+
+            $this->saveEmployeeJob($idJob, $idEmployee, $position, $idMasterCategory);
+
+            $this->db->commit();
+
+        } catch (PDOException $e) {
+
+            $this->db->rollBack();
+
+            var_dump($e->getMessage());
+            die();
+        }
+    }
+
+    public function getIdMasterCategory($unit)
+    {
+
+        $query = 'SELECT id_master_category FROM tb_master_category WHERE unit = :unit';
+        $this->db->query($query);
+        $this->db->bindData(':unit', $unit);
+        return $this->db->fetch();
+    }
+
+    public function saveEmployeeJob($idJob, $idEmployee, $type, $idMaster)
+    {
+        $query = 'INSERT INTO tb_employee_job (id_employee_job, id_employee, type, id_master_category) VALUES (:id_job, :id_employee, :type, :id_master)';
+        $this->db->query($query);
+        $this->db->bindData(':id_job', $idJob);
+        $this->db->bindData(':id_employee', $idEmployee);
+        $this->db->bindData(':type', $type);
+        $this->db->bindData(':id_master', $idMaster);
+        return $this->db->affectedRows();
+    }
+
+
+    public function checkValidUser($username, $email, $no_telp)
+    {
+        $query = 'SELECT count( username ) AS count FROM tb_user WHERE username = :username OR email = :email OR no_telp = :no_telp';
+        $this->db->query($query);
+        $this->db->bindData(':username', $username);
+        $this->db->bindData(':email', $email);
+        $this->db->bindData(':no_telp', $no_telp);
+        return $this->db->fetch();
+    }
+
+    public function saveUser($idUser, $idAuth, $email, $username, $noTelp, $name, $password)
+    {
+
+        $query = 'INSERT INTO tb_user (id_user, id_auth, username, email, no_telp, name, password) VALUES (:id_user, :id_auth, :username, :email, :no_telp, :name, :password)';
+
+
+        $this->db->query($query);
+        $this->db->bindData(':id_user', $idUser);
+        $this->db->bindData(':id_auth', $idAuth);
+        $this->db->bindData(':email', $email);
+        $this->db->bindData(':username', $username);
+        $this->db->bindData(':no_telp', $noTelp);
+        $this->db->bindData(':name', $name);
+        $this->db->bindData(':password', $password);
+        $result = $this->db->affectedRows();
+
+
+        return $result;
+    }
+
+    public function getIdAuth($position)
+    {
+        $query = 'SELECT id_auth FROM tb_authorization WHERE status = :status';
+        $this->db->query($query);
+        $this->db->bindData(':status', $position);
+        return $this->db->fetch();
+    }
+
+    public function getPositionName($idPosition)
+    {
+
+        $query = 'SELECT position FROM tb_position WHERE id_position = :id_position';
+        $this->db->query($query);
+        $this->db->bindData(':id_position', $idPosition);
+        return $this->db->fetch();
+    }
+
+    public function saveLandscapeEmployee($idEmployee, $email, $name, $phoneNumber, $idPosition, $idDivision, $idJob)
+    {
+
+        
+        // insert employe
+        $queryInsertEmployee = 'INSERT INTO tb_employee (id_employee, name, email, no_telp, id_position, id_division, id_job) VALUES (:id_employee, :name, :email, :no_telp, :id_position, :id_division, :id_job)';
+
+        $this->db->query($queryInsertEmployee);
+        $this->db->bindData(':id_employee', $idEmployee);
+        $this->db->bindData(':email', $email);
+        $this->db->bindData(':name', $name);
+        $this->db->bindData(':no_telp', $phoneNumber);
+        $this->db->bindData(':id_position', $idPosition);
+        $this->db->bindData(':id_division', $idDivision);
+        $this->db->bindData(':id_job', $idJob);
+
+        $result = $this->db->affectedRows($queryInsertEmployee);
+
+
+        if ($result > 0) {
+            if ($result) {
+                http_response_code(200);
+                echo json_encode(
+                    array(
+                        "message" => "success save employee"
+                    ),
+                    JSON_PRETTY_PRINT
+                );
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(
+                array(
+                    "message" => "failed save employee"
+                ),
+                JSON_PRETTY_PRINT
+            );
+        }
+    }
+
+    public function getPositionSecurity()
+    {
+        $query = 'SELECT id_position, position FROM tb_position WHERE position IN ("Danru")';
+        $this->db->query($query);
+        return $this->db->fetchAll();
+    }
+
+    public function getPositionBuildingControll()
+    {
+        $query = 'SELECT id_position, position FROM tb_position WHERE position IN ("Supervisor / Estate Koordinator")';
+        $this->db->query($query);
+        return $this->db->fetchAll();
+    }
+
+
+    public function getPositionMekanikelElektrikel()
+    {
+        $query = 'SELECT id_position, position FROM tb_position WHERE position IN ("Teknisi", "Supervisor / Estate Koordinator")';
+        $this->db->query($query);
+        return $this->db->fetchAll();
+    }
+
+    public function getPositionLandscape()
+    {
+        $query = 'SELECT id_position, position FROM tb_position WHERE position NOT IN ("Teknisi", "Danru")';
+        $this->db->query($query);
+        return $this->db->fetchAll();
     }
 
     public function updateUser($idUser, $data)

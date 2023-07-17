@@ -14,4 +14,10 @@ interface UserService
     public function getAllStatus();
 
     public function updateUser(string $idUser, array $data);
+
+    public function getPositionLandscape();
+    public function getPositionMekanikelElektrikel();
+    public function getPositionBuildingControll();
+    public function getPositionSecurity();
+    public function saveEmployee();
 }

@@ -1,31 +1,89 @@
 $(function () {
   toogle();
-
-  activeMenu();
+  setActiveLink();
+  setVerticalDivider();
 });
 
-function activeMenu() {
-  // Mendapatkan URL saat ini
-  var currentURL = window.location.href;
+function setVerticalDivider() {
+  const accordion = $(".sub-menu.active");
 
-  // Mendapatkan semua elemen <a> di dalam navbar
-  var navLinks = document.querySelectorAll(".navbar-nav .nav-link");
+  if (accordion !== undefined) {
+    $(accordion).append('<div class="sub-menu-vertical-divider"></div>');
 
-  // Meloop melalui setiap elemen <a>
-  navLinks.forEach(function (link) {
-    // Memeriksa jika URL elemen <a> sesuai dengan URL saat ini
-    if (link.href === currentURL) {
-      // Menghapus kelas "active" dari elemen <li> sebelumnya
-      var previousActiveLi = document.querySelector(".navbar-nav .active");
-      if (previousActiveLi) {
-        previousActiveLi.classList.remove("active");
-      }
+    const subMenuHeight = $(accordion).outerHeight() - 25;
 
-      // Menambahkan kelas "active" pada elemen <li> yang merupakan elemen induk dari elemen <a>
-      var liElement = link.parentNode;
-      liElement.classList.add("active");
+    $(accordion)
+      .find(".sub-menu-vertical-divider")
+      .css({
+        height: subMenuHeight + "px",
+      });
+  }
+}
+
+function toggleAccordion(collapseId) {
+  const collapseElement = document.getElementById(collapseId);
+
+  const accordionToogle = collapseElement.previousElementSibling;
+
+  const iconElement =
+    collapseElement.previousElementSibling.querySelector(".accordion-icon");
+
+  collapseElement.classList.toggle("active");
+
+  if (collapseElement.classList.contains("active")) {
+    iconElement.innerHTML = "▲"; // Chevron atas
+    // accordionToogle.classList.add("link-active");
+  } else {
+    iconElement.innerHTML = "▼"; // Chevron bawah
+    // accordionToogle.classList.remove("link-active");
+  }
+
+  setVerticalDivider();
+}
+
+// Function to check and add class 'sub-link-active' to the appropriate nav-link
+function setActiveLink() {
+  const links = document.getElementsByClassName("nav-link");
+
+  const currentUrl = window.location.href;
+
+  const linkWithoutAccordion = document.getElementsByClassName("links");
+
+  for (let i = 0; i < linkWithoutAccordion.length; i++) {
+    const link = linkWithoutAccordion[i];
+    const href = link.getAttribute("href");
+
+    if (currentUrl.endsWith(href)) {
+      $(link.getElementsByClassName("accordion-toggle")).addClass(
+        "link-active"
+      );
+
+      return;
     }
-  });
+  }
+
+  for (let i = 0; i < links.length; i++) {
+    const link = links[i];
+    const href = link.getAttribute("href");
+
+    if (currentUrl.endsWith(href)) {
+      link.classList.add("sub-link-active");
+      // Assuming the accordion parent is the 'ul' element with class 'sub-menu'
+      const accordion = link.closest(".sub-menu");
+      accordion.classList.add("show");
+
+      // Open the parent accordion if nested within another submenu
+      const parentAccordion = accordion.closest(".accordion-content");
+      if (parentAccordion) {
+        const parentLinkId = parentAccordion.id;
+        toggleAccordion(parentLinkId);
+
+        const collapseElement = document.getElementById(parentLinkId);
+        const accordionToogle = collapseElement.previousElementSibling;
+        accordionToogle.classList.add("link-active");
+      }
+    }
+  }
 }
 
 function toogle() {

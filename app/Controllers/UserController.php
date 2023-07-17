@@ -5,9 +5,7 @@ namespace NextG\RwAdminApp\Controllers;
 use NextG\RwAdminApp\App\View;
 use NextG\RwAdminApp\Services\UserServices\Impl\UserServiceImpl;
 use NextG\RwAdminApp\Services\UserServices\UserService;
-
-
-
+use PDOException;
 
 class UserController
 {
@@ -17,6 +15,56 @@ class UserController
     {
         $this->userService = new UserServiceImpl;
     }
+
+    public function saveEmployee() {
+        $this->userService->saveEmployee();
+    }
+
+    public function getPositionSecurity()
+    {
+        try {
+            $positions = $this->userService->getPositionSecurity();
+            echo json_encode($positions, JSON_PRETTY_PRINT);
+        } catch (PDOException $e) {
+            // var_dump($e->getMessage());
+        }
+    }
+
+    public function getPositionBuildingControll()
+    {
+        try {
+            $positions = $this->userService->getPositionBuildingControll();
+            echo json_encode($positions, JSON_PRETTY_PRINT);
+        } catch (PDOException $e) {
+            // var_dump($e->getMessage());
+        }
+    }
+
+    public function getPositionMe()
+    {
+        try {
+            $positions = $this->userService->getPositionMekanikelElektrikel();
+            echo json_encode($positions, JSON_PRETTY_PRINT);
+        } catch (PDOException $e) {
+            // var_dump($e->getMessage());
+        }
+    }
+
+    public function getPositionLandscape()
+    {
+        try {
+            $positions = $this->userService->getPositionLandscape();
+            echo json_encode($positions, JSON_PRETTY_PRINT);
+        } catch (PDOException $e) {
+            // var_dump($e->getMessage());
+        }
+    }
+
+    public function addUserView()
+    {
+        View::render('layouts/app', 'users/add_user');
+    }
+
 
     public function updateUser()
     {

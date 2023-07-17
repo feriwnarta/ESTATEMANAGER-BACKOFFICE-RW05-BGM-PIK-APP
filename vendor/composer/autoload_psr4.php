@@ -6,5 +6,6 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Webpatser\\Uuid\\' => array($vendorDir . '/webpatser/laravel-uuid/src/Webpatser/Uuid'),
     'NextG\\RwAdminApp\\' => array($baseDir . '/app'),
 );
