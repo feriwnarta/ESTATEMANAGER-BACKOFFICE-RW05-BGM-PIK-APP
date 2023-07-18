@@ -46,7 +46,7 @@ $(document).ajaxStart(function () {
   Swal.fire({
     html: `
     <div style="display: flex; justify-content: center; align-items: center; height: 100px;">
-    <div style="width: 3rem; height: 3rem;" class="spinner-border text-warning" role="status">
+    <div style="width: 3rem; height: 3rem;" class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
@@ -118,8 +118,113 @@ function saveUserRequest(data) {
     data: data,
     dataType: "JSON",
     success: function (response) {
-      console.log(response);
       sweetAlertDestroy();
+
+      if ((response.message = "success create user")) {
+        Swal.fire({
+          icon: "success",
+          title: "Berhasil tambah user",
+          showConfirmButton: true,
+
+          didClose: () => {
+            location.reload();
+          },
+        });
+      }
+    },
+    error: function (xhr, status, error) {
+      let message = JSON.parse(xhr.responseText).message;
+      if (message == "position not exist") {
+        Swal.fire({
+          icon: "error",
+          title: "Posisi tidak tersedia untuk bagian ini",
+          message: "silahkan hubungi administrator",
+          showConfirmButton: true,
+          didClose: () => {
+            location.reload();
+          },
+        });
+      } else if (message == "division not exist") {
+        Swal.fire({
+          icon: "error",
+          title: "divisi tidak tersedia untuk bagian ini",
+          text: "silahkan hubungi administrator",
+          showConfirmButton: true,
+          didClose: () => {
+            location.reload();
+          },
+        });
+      } else if (message == "id master not exist") {
+        Swal.fire({
+          icon: "error",
+          title: "Ada sesuatu yang bermasalah",
+          text: "silahkan hubungi administrator",
+          showConfirmButton: true,
+          didClose: () => {
+            location.reload();
+          },
+        });
+      } else if (message == "position not exist") {
+        Swal.fire({
+          icon: "error",
+          title: "Bagian tidak tersedia",
+          text: "silahkan hubungi administrator",
+          showConfirmButton: true,
+          didClose: () => {
+            location.reload();
+          },
+        });
+      } else if (message == "auth not exist") {
+        Swal.fire({
+          icon: "error",
+          title: "Authentikasi tidak tersedia untuk bagian ini",
+          text: "silahkan hubungi administrator",
+          showConfirmButton: true,
+          didClose: () => {
+            location.reload();
+          },
+        });
+      } else if (message == "username or email or phone number exist") {
+        Swal.fire({
+          icon: "error",
+          title: "Duplikat data",
+          text: "Username atau email atau nomor telpon tidak boleh sama",
+          showConfirmButton: true,
+          didClose: () => {
+            location.reload();
+          },
+        });
+      } else if (message == "failed save user") {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Ada sesuatu yang salah, hubungi administrator",
+          showConfirmButton: true,
+          didClose: () => {
+            location.reload();
+          },
+        });
+      } else if (message == "failed save notification") {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal menyimpan notifikasi",
+          text: "Ada sesuatu yang salah, hubungi administrator",
+          showConfirmButton: true,
+          didClose: () => {
+            location.reload();
+          },
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Ada sesuatu yang salah, hubungi administrator",
+          showConfirmButton: true,
+          didClose: () => {
+            location.reload();
+          },
+        });
+      }
     },
   });
 }

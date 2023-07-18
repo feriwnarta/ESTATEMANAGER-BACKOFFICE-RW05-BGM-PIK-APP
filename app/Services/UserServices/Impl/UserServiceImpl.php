@@ -57,7 +57,19 @@ class UserServiceImpl implements UserService
         if ($divisi == 'radioPerawatanLanskap') {
             $scope = 'Landscape';
             $unit = 'Pertamanan, kebersihan, dan clubhouse';
+        } else if ($divisi == 'radioMekanikelElektrikel') {
+            $scope = 'ME & Perawatan kolam renang';
+            $unit = 'ME, INFRA dan kolam renang';
+        } else if ($divisi == 'radioBuildingControll') {
+            $scope = 'Building controll dan perizinan';
+            $unit = 'Building Control dan security';
+        } else if ($divisi == 'radioMasalahkemanan') {
+            $scope = 'Kemanan / Security';
+            $unit = 'Building Control dan security';
+        } else {
+            $this->failedResponse("unit not exist", "failed");
         }
+
 
         try {
             $this->db->startTransaction();
@@ -67,23 +79,43 @@ class UserServiceImpl implements UserService
 
             $this->db->query($queryDivisionLandscape);
             $division = $this->db->fetch();
+
             if (empty($division)) {
+                $this->failedResponse("division not exist", "failed");
+                return;
             }
 
-            $idMasterCategory = $this->getIdMasterCategory($unit)['id_master_category'];
+            $idMasterCategory = $this->getIdMasterCategory($unit);
+
+            if (empty($idMasterCategory)) {
+                $this->failedResponse("id master not exist", "failed");
+                return;
+            }
+
+            $idMasterCategory = $idMasterCategory['id_master_category'];
 
             $idUser = Uuid::generate()->string;
-            $position = $this->getPositionName($idPosition)['position'];
-            $idAuth = $this->getIdAuth($position)['id_auth'];
+            $position = $this->getPositionName($idPosition);
+
+            if (empty($position)) {
+                $this->failedResponse("position not exist", "failed");
+                return;
+            }
+
+            $position = $position['position'];
+
+            $idAuth = $this->getIdAuth($position);
+
+            if (empty($idAuth)) {
+                $this->failedResponse("auth not exist", "failed");
+                return;
+            }
+
+            $idAuth = $idAuth['id_auth'];
+
 
             if ($idAuth == '' || $idAuth == null) {
-                http_response_code(400);
-                echo json_encode(
-                    array(
-                        "message" => "auth not exist"
-                    ),
-                    JSON_PRETTY_PRINT
-                );
+                $this->failedResponse("auth not exist", "failed");
                 return;
             }
 
@@ -91,13 +123,7 @@ class UserServiceImpl implements UserService
             $usernameExist = $this->checkValidUser($username, $email, $phoneNumber);
 
             if ($usernameExist['count'] > 0) {
-                http_response_code(400);
-                echo json_encode(
-                    array(
-                        "message" => "username or email or phone number exist"
-                    ),
-                    JSON_PRETTY_PRINT
-                );
+                $this->failedResponse("username or email or phone number exist", "failed");
                 return;
             }
 
@@ -106,38 +132,91 @@ class UserServiceImpl implements UserService
 
 
             if ($resultSaveUser == 0) {
-                http_response_code(400);
-                echo json_encode(
-                    array(
-                        "message" => "failed save user"
-                    ),
-                    JSON_PRETTY_PRINT
-                );
+                $this->failedResponse("failed save user", "failed");
+                return;
+            }
+
+            // insert notification
+            $idNotification = Uuid::generate()->string;
+            $resultSaveNotif = $this->saveNotification($idNotification, $idUser);
+
+            if ($resultSaveNotif == 0) {
+                $this->failedResponse("failed save notification", "failed");
                 return;
             }
 
 
             $idDivision = $division['id_division'];
-            $idEmployee = Uuid::generate()->string;
             $idJob = Uuid::generate()->string;
 
-            
-            $this->saveLandscapeEmployee($idEmployee, $email, $name, $phoneNumber, $idPosition, $idDivision, $idJob);
+            $resultSaveEmployee = $this->saveLandscapeEmployee($idUser, $email, $name, $phoneNumber, $idPosition, $idDivision, $idJob);
 
-            $this->saveEmployeeJob($idJob, $idEmployee, $position, $idMasterCategory);
+
+            if ($resultSaveEmployee == 0) {
+                $this->failedResponse("failed save employee", "failed");
+                return;
+            }
+
+            $resultSaveEmlpoyeeJob = $this->saveEmployeeJob($idJob, $idUser, $position, $idMasterCategory);
+
+            if ($resultSaveEmlpoyeeJob == 0) {
+                $this->failedResponse("failed save employee job", "failed");
+                return;
+            }
 
             $this->db->commit();
 
+            // success Message 
+            $this->successResponse("success create user", "success");
         } catch (PDOException $e) {
-
+            http_response_code(400);
+            echo json_encode(
+                array(
+                    "message" => "failed save data"
+                ),
+                JSON_PRETTY_PRINT
+            );
             $this->db->rollBack();
 
-            var_dump($e->getMessage());
+
             die();
         }
     }
 
-    public function getIdMasterCategory($unit)
+    private function saveNotification($idNotification, $idUser) {
+        $query = 'INSERT INTO tb_settings_notification (id_notification, id_user) VALUES (:id_notif, :id_user)';
+        $this->db->query($query);
+        $this->db->bindData(':id_notif', $idNotification);
+        $this->db->bindData(':id_user', $idUser);
+        return $this->db->affectedRows();
+    }
+
+
+    private function successResponse($message, $status)
+    {
+        http_response_code(200);
+        echo json_encode(
+            array(
+                "status" => $status,
+                "message" => $message
+            ),
+            JSON_PRETTY_PRINT
+        );
+    }
+
+    private function failedResponse($message, $status)
+    {
+        http_response_code(400);
+        echo json_encode(
+            array(
+                "status" => $status,
+                "message" => $message
+            ),
+            JSON_PRETTY_PRINT
+        );
+    }
+
+    private function getIdMasterCategory($unit)
     {
 
         $query = 'SELECT id_master_category FROM tb_master_category WHERE unit = :unit';
@@ -146,7 +225,7 @@ class UserServiceImpl implements UserService
         return $this->db->fetch();
     }
 
-    public function saveEmployeeJob($idJob, $idEmployee, $type, $idMaster)
+    private function saveEmployeeJob($idJob, $idEmployee, $type, $idMaster)
     {
         $query = 'INSERT INTO tb_employee_job (id_employee_job, id_employee, type, id_master_category) VALUES (:id_job, :id_employee, :type, :id_master)';
         $this->db->query($query);
@@ -158,7 +237,7 @@ class UserServiceImpl implements UserService
     }
 
 
-    public function checkValidUser($username, $email, $no_telp)
+    private function checkValidUser($username, $email, $no_telp)
     {
         $query = 'SELECT count( username ) AS count FROM tb_user WHERE username = :username OR email = :email OR no_telp = :no_telp';
         $this->db->query($query);
@@ -168,7 +247,7 @@ class UserServiceImpl implements UserService
         return $this->db->fetch();
     }
 
-    public function saveUser($idUser, $idAuth, $email, $username, $noTelp, $name, $password)
+    private function saveUser($idUser, $idAuth, $email, $username, $noTelp, $name, $password)
     {
 
         $query = 'INSERT INTO tb_user (id_user, id_auth, username, email, no_telp, name, password) VALUES (:id_user, :id_auth, :username, :email, :no_telp, :name, :password)';
@@ -188,7 +267,7 @@ class UserServiceImpl implements UserService
         return $result;
     }
 
-    public function getIdAuth($position)
+    private function getIdAuth($position)
     {
         $query = 'SELECT id_auth FROM tb_authorization WHERE status = :status';
         $this->db->query($query);
@@ -196,7 +275,7 @@ class UserServiceImpl implements UserService
         return $this->db->fetch();
     }
 
-    public function getPositionName($idPosition)
+    private function getPositionName($idPosition)
     {
 
         $query = 'SELECT position FROM tb_position WHERE id_position = :id_position';
@@ -205,10 +284,10 @@ class UserServiceImpl implements UserService
         return $this->db->fetch();
     }
 
-    public function saveLandscapeEmployee($idEmployee, $email, $name, $phoneNumber, $idPosition, $idDivision, $idJob)
+    private function saveLandscapeEmployee($idEmployee, $email, $name, $phoneNumber, $idPosition, $idDivision, $idJob)
     {
 
-        
+
         // insert employe
         $queryInsertEmployee = 'INSERT INTO tb_employee (id_employee, name, email, no_telp, id_position, id_division, id_job) VALUES (:id_employee, :name, :email, :no_telp, :id_position, :id_division, :id_job)';
 
@@ -224,25 +303,7 @@ class UserServiceImpl implements UserService
         $result = $this->db->affectedRows($queryInsertEmployee);
 
 
-        if ($result > 0) {
-            if ($result) {
-                http_response_code(200);
-                echo json_encode(
-                    array(
-                        "message" => "success save employee"
-                    ),
-                    JSON_PRETTY_PRINT
-                );
-            }
-        } else {
-            http_response_code(400);
-            echo json_encode(
-                array(
-                    "message" => "failed save employee"
-                ),
-                JSON_PRETTY_PRINT
-            );
-        }
+        return $result;
     }
 
     public function getPositionSecurity()

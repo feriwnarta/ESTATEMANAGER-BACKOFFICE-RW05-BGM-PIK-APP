@@ -45,7 +45,9 @@ function toggleAccordion(collapseId) {
 function setActiveLink() {
   const links = document.getElementsByClassName("nav-link");
 
-  const currentUrl = window.location.href;
+  let currentUrl = window.location.href;
+  currentUrl = currentUrl.split("/");
+  currentUrl = currentUrl[currentUrl.length -1];
 
   const linkWithoutAccordion = document.getElementsByClassName("links");
 
@@ -53,7 +55,7 @@ function setActiveLink() {
     const link = linkWithoutAccordion[i];
     const href = link.getAttribute("href");
 
-    if (currentUrl.endsWith(href)) {
+    if (currentUrl === href) {
       $(link.getElementsByClassName("accordion-toggle")).addClass(
         "link-active"
       );
@@ -62,11 +64,18 @@ function setActiveLink() {
     }
   }
 
+  
+
   for (let i = 0; i < links.length; i++) {
     const link = links[i];
     const href = link.getAttribute("href");
 
-    if (currentUrl.endsWith(href)) {
+    
+
+    if (currentUrl === href) {
+
+      
+
       link.classList.add("sub-link-active");
       // Assuming the accordion parent is the 'ul' element with class 'sub-menu'
       const accordion = link.closest(".sub-menu");
