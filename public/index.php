@@ -27,7 +27,11 @@ Router::add('POST', '/save-employee', UserController::class, 'saveEmployee', [Au
 Router::add('GET', '/auth', AuthController::class, 'authView', [AuthMiddleware::class]);
 Router::add('GET', '/new-auth', AuthController::class, 'addAuthView', [AuthMiddleware::class]);
 Router::add('POST', '/update-auth', AuthController::class, 'updateAuthAcces', [AuthMiddleware::class]);
+Router::add('POST', '/add-auth', AuthController::class, 'addAuth', [AuthMiddleware::class]);
 
+// Complaint & Request
+// Complaint
+Router::add('GET', '/complaint', \NextG\RwAdminApp\Controllers\Complaint::class, 'complaintView', [AuthMiddleware::class]);
 
 Router::add('GET', '/otp', OtpController::class, 'otpView');
 

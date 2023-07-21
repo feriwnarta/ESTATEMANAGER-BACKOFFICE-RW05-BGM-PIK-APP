@@ -34,6 +34,15 @@
                     <li><a class="nav-link" href="new-auth">Add Auth</a></li>
                 </ul>
             </li>
+<!--            <li class="nav-item">-->
+<!--                <div class="accordion-toggle" onclick="toggleAccordion('complaintAndRequest')">Complaint & Request-->
+<!--                    <span class="accordion-icon">▼</span>-->
+<!--                </div>-->
+<!--                <ul class="sub-menu accordion-content" id="complaintAndRequest">-->
+<!--                    <li><a class="nav-link" href="complaint">Complaint</a></li>-->
+<!--                    <li><a class="nav-link" href="request">Request</a></li>-->
+<!--                </ul>-->
+<!--            </li>-->
             <li class="nav-item">
                 <a href="otp" class="links">
                     <div class="accordion-toggle">OTP</div>

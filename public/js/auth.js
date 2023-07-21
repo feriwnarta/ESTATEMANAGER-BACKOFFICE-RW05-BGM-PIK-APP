@@ -23,6 +23,8 @@ function buttonUpdateClicked() {
   });
 }
 
+
+
 function buttonAuthSaveClicked() {
   $(".btn-auth-save").on("click", function () {
     // Objek untuk menyimpan pasangan key dan value
@@ -57,6 +59,9 @@ function requestUpdateAccess(data) {
     data: data,
     dataType: "JSON",
     success: function (response) {
+
+      sweetAlertDestroy();
+
       if (response.message == "success update access") {
         Swal.fire({
           icon: "success",
@@ -70,6 +75,8 @@ function requestUpdateAccess(data) {
       }
     },
     error: function (xhr, status, error) {
+      sweetAlertDestroy();
+
       let message = JSON.parse(xhr.responseText).message;
       if (message == "failed update access") {
         Swal.fire({

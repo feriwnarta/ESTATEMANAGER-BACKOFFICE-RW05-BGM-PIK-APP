@@ -72,10 +72,7 @@ $(document).ajaxStart(function () {
   });
 });
 
-function sweetAlertDestroy() {
-  // Menutup SweetAlert menggunakan fungsi close()
-  Swal.close();
-}
+
 
 function buttonSaveClick() {
   $("#formAddEmployee").submit(function (e) {
@@ -119,6 +116,7 @@ function saveUserRequest(data) {
     dataType: "JSON",
     success: function (response) {
       sweetAlertDestroy();
+
 
       if ((response.message = "success create user")) {
         Swal.fire({
@@ -243,7 +241,7 @@ function setRadio() {
 
 function changeForm(id) {
   if (id === "radioPerawatanLanskap") {
-    $(".form-content").html(formEmployee);
+    // $(".form-content").html(formEmployee);
     positionRequestLandscape();
   } else if (id === "radioMekanikelElektrikel") {
     // $(".form-content").html(formEmployee);
@@ -274,6 +272,7 @@ function positionRequestSecurity() {
           `;
         });
 
+        $("#bagianSelect").empty();
         $("#bagianSelect").append(option);
         sweetAlertDestroy();
       }

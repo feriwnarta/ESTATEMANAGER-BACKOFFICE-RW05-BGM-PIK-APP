@@ -28,6 +28,7 @@ class UserServiceImpl implements UserService
         if (!isset($obj) && empty($obj)) {
             http_response_code(400);
             echo json_encode('parameter empty', JSON_PRETTY_PRINT);
+            return;
         }
 
 
@@ -176,6 +177,7 @@ class UserServiceImpl implements UserService
                 ),
                 JSON_PRETTY_PRINT
             );
+
             $this->db->rollBack();
 
 

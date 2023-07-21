@@ -46,8 +46,8 @@ foreach ($data as $user) {
         <<<EOD
         <tr id="$id">
             <td>$status</td>
-            <td>$name</td>
             <td>$userName</td>
+            <td>$name</td>
             <td>$email</td>
             <td>$noTelp</td>
             <td style="width: 155px;">

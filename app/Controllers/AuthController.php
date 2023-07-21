@@ -86,6 +86,19 @@ class AuthController
 
     public function addAuthView()
     {
-        View::render('layouts/app', 'authorization/add_auth');
+        $data = $this->authService->getAccess();
+        View::render('layouts/app', 'authorization/add_auth', $data);
+    }
+
+    public  function  addAuth() {
+        $json = file_get_contents('php://input');
+        $obj = json_decode($json, true);
+
+        if (!isset($obj) && empty($obj)) {
+            $this->failedResponse('paramater empty', 'failed');
+            return;
+        }
+
+        $this->authService->addAuth($obj);
     }
 }
