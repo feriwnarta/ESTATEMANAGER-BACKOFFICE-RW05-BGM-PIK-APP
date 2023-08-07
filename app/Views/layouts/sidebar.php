@@ -25,6 +25,13 @@
                     <li><a class="nav-link" href="add-user">Add User</a></li>
                 </ul>
             </li>
+
+            <li class="nav-item">
+                <a href="payment-ipl" class="links">
+                    <div class="accordion-toggle">Pembayaran Ipl</div>
+                </a>
+            </li>
+
             <li class="nav-item">
                 <div class="accordion-toggle" onclick="toggleAccordion('auth')">Authorization
                     <span class="accordion-icon">▼</span>
@@ -48,6 +55,7 @@
                     <div class="accordion-toggle">OTP</div>
                 </a>
             </li>
+
 
 
         </ul>

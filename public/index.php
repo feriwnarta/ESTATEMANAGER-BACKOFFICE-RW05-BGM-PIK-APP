@@ -22,6 +22,9 @@ Router::add('GET', '/position-building-controll', UserController::class, 'getPos
 Router::add('GET', '/position-security', UserController::class, 'getPositionSecurity', [AuthMiddleware::class]);
 Router::add('POST', '/save-employee', UserController::class, 'saveEmployee', [AuthMiddleware::class]);
 
+// Payment IPL
+Router::add('GET', '/payment-ipl', \NextG\RwAdminApp\Controllers\PaymentIplController::class, 'index', [AuthMiddleware::class]);
+Router::add('POST', '/update-payment', \NextG\RwAdminApp\Controllers\PaymentIplController::class, 'updatePayment', [AuthMiddleware::class]);
 
 // Authorization
 Router::add('GET', '/auth', AuthController::class, 'authView', [AuthMiddleware::class]);

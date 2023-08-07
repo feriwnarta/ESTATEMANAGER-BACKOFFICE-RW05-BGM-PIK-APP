@@ -10,5 +10,5 @@ class Configuration {
     public static $DB_PASS = '';
 
     public static $ROOT = 'http://localhost/rw-admin-app/';
-
+    public static $ROOT_APP = 'http://localhost/nextg_mobileapp/';
 }
