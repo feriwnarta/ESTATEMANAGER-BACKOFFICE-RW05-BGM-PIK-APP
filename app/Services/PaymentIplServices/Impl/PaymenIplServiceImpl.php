@@ -47,28 +47,18 @@ class PaymenIplServiceImpl implements PaymentIplService
 
 
 
-    public function update(string $id, string $status) {
+    public function update(string $id, string $status, $note) {
         try {
-           $query = 'UPDATE tb_upload_ipl SET status = :status WHERE id = :id';
+           $query = 'UPDATE tb_upload_ipl SET status = :status, note = :note WHERE id = :id';
            $this->db->query($query);
            $this->db->startTransaction();
 
            $this->db->bindData(':status', $status);
            $this->db->bindData(':id', $id);
+           $this->db->bindData(':note', $note);
            $result = $this->db->affectedRows();
 
 
-            switch ($status) {
-                case 'Diterima':
-                    $message = 'Bukti Pembayaran anda diterima. silahkan datang ke kantor RW 05 BGM PIK untuk mengambil kantong sampah';
-                    break;
-                case  'Diproses' :
-                    $message = 'Bukti Pembayaran anda sedang diproses. Tunggu notifikasi selanjutnya untuk informasi mengambil kantong sampah di kantor RW 05';
-                    break;
-                case  'Ditolak' :
-                    $message = 'Bukti Pembayaran anda Ditolak, Foto yang anda kirimkan tidak jelas dan buram, silahkan kirim kembali untuk bisa mengambil kantong sampah';
-                    break;
-            }
 
             // dapatkan id user
             $query = 'SELECT id_user FROM tb_upload_ipl WHERE id = :id';
@@ -78,7 +68,7 @@ class PaymenIplServiceImpl implements PaymentIplService
 
 
 
-            $resultSaveNotif = $this->saveNotif($idUser, $message);
+            $resultSaveNotif = $this->saveNotif($idUser, $note);
 
             if($resultSaveNotif == 'failed save notif') {
                 http_response_code(400);
@@ -95,7 +85,7 @@ class PaymenIplServiceImpl implements PaymentIplService
 
             if($resultToken != null) {
                 $token = $resultToken['token'];
-                FirebaseMessaging::sendNotif($token, 'Status Pengambilan Plastik Sampah', $message);
+                FirebaseMessaging::sendNotif($token, 'Status Pengambilan Plastik Sampah', $note);
             }
 
            $this->db->commit();
@@ -114,7 +104,7 @@ class PaymenIplServiceImpl implements PaymentIplService
 
     public function getData() {
         try {
-            $query = 'SELECT i.id, i.id_user, i.image, i.periode, i.status, i.create_at, u.username, u.email, u.no_telp, u.name FROM tb_upload_ipl AS i INNER JOIN tb_user AS u ON u.id_user = i.id_user ORDER BY create_at DESC';
+            $query = 'SELECT i.id, i.id_user, i.image, i.periode, i.status, i.create_at, u.username, u.email, u.no_telp, u.name FROM tb_upload_ipl AS i INNER JOIN tb_user AS u ON u.id_user = i.id_user WHERE i.status NOT IN ("Ditolak") ORDER BY create_at DESC';
             $this->db->query($query);
             $result = $this->db->fetchAll();
 

@@ -88,5 +88,4 @@ EOD;
 echo $modal;
 
 // ambil script data table
-echo '<script src="public/js/datatables.js"></script>';
 echo '<script src="public/js/user.js"></script>';

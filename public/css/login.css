@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+.bg-side {
+    background-image: url("../img/side-image.png");
+    background-size: cover;
+    height: 100vh;
+
+}
+
+body {
+    font-family: Inter !important;
+}
+
+.content-login {
+    padding: 42px 48px;
+}
+
+.logo-text {
+    color: var(--primary-main, #2094F3);
+    text-align: center;
+
+    /* Headline/3 */
+    font-family: Inter;
+    font-size: 19px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 28px; /* 147.368% */
+    letter-spacing: 0.029px;
+    margin-left: 8px;
+}
+
+.welcome {
+    color: var(--neutral-100, #0A0A0A);
+
+    /* Headline/1 */
+    font-family: Inter;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 40px; /* 133.333% */
+    letter-spacing: 0.075px;
+}
+
+.login-text {
+    color: var(--neutral-60, #9E9E9E);
+
+    /* Body/1 */
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px; /* 150% */
+    letter-spacing: 0.08px;
+    margin-top: 16px;
+}
+
+.login {
+    margin-bottom: 35%;
+}
+
+.btn-login {
+    border-radius: 100px;
+    background: #2094F3;
+
+    /* Shadow 1 */
+    box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.12);
+    display: flex;
+    padding: 6px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    align-self: stretch;
+    width: 100%;
+    margin-top: 32px;
+    color: var(--neutral-10, #FFF);
+    text-align: center;
+
+    /* Button */
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px; /* 142.857% */
+    letter-spacing: 0.175px;
+}
+

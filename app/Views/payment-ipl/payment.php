@@ -2,10 +2,12 @@
 
 $root = \NextG\RwAdminApp\App\Configuration::$ROOT_APP;
 
-if ($data == null) {
-    echo 'data kosong';
-    die();
+if ($data == 'data kosong') {
+    echo $data;
+    return;
 }
+
+
 
 $tableHeader =
     <<<EOD
@@ -87,5 +89,5 @@ EOD;
 echo $modal;
 
 // ambil script data table
-echo '<script src="public/js/datatables.js"></script>';
+//echo '<script src="public/js/datatables.js"></script>';
 echo '<script src="public/js/payment.js"></script>';

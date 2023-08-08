@@ -39,8 +39,9 @@ class PaymentIplController
 
         $id = $obj['id'];
         $status = $obj['status'];
+        $note = $obj['note'];
 
-        $this->paymentIplService->update($id, $status);
+        $this->paymentIplService->update($id, $status, $note);
 
 
 

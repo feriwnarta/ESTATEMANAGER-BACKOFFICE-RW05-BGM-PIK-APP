@@ -2,9 +2,25 @@ var selectedOption = null;
 
 $(function () {
   // ajax loading
-
   buttonUserDeleteClicked(".btn-user-delete");
   updateUser();
+
+  if ($("#tableUser").length) {
+    $("#tableUser").DataTable({
+      "drawCallback": function( settings ) {
+
+        updateUser();
+        buttonUserDeleteClicked(".btn-user-delete");
+
+      },
+      searching: true,
+      order: [[1, "DESC"]],
+      paging: true,
+      ordering: true,
+      responsive: true,
+      select: true,
+    });
+  }
 });
 
 function setUpdate() {

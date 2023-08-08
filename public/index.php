@@ -9,6 +9,11 @@ use NextG\RwAdminApp\Middleware\AuthMiddleware;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+// LOGIN
+Router::add('GET', '/login', \NextG\RwAdminApp\Controllers\LoginController::class, 'index');
+Router::add('GET', '/', \NextG\RwAdminApp\Controllers\LoginController::class, 'index');
+Router::add('POST', '/login', \NextG\RwAdminApp\Controllers\LoginController::class, 'login');
+
 
 Router::add('GET', '/users', UserController::class, 'index', [AuthMiddleware::class]);
 Router::add('POST', '/user', UserController::class, 'detailUser', [AuthMiddleware::class]);

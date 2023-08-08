@@ -114,5 +114,5 @@ echo $tableDisplay;
 // echo $modal;
 
 // ambil script data table
-echo '<script src="public/js/datatables.js"></script>';
+//echo '<script src="public/js/datatables.js"></script>';
 echo '<script src="public/js/auth.js"></script>';

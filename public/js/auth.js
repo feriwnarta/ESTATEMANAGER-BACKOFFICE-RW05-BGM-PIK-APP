@@ -1,5 +1,23 @@
 $(function () {
+
+  if ($("#tableUser").length) {
+    $("#tableUser").DataTable({
+      "drawCallback": function( settings ) {
+
+        buttonUpdateClicked();
+
+      },
+      searching: true,
+      order: [[1, "DESC"]],
+      paging: true,
+      ordering: true,
+      responsive: true,
+      select: true,
+    });
+  }
+
   buttonUpdateClicked();
+
 });
 
 function buttonUpdateClicked() {
