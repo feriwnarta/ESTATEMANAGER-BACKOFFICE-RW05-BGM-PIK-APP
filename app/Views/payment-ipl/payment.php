@@ -36,7 +36,6 @@ $tableData = '';
 foreach ($data as $payment) {
 
     $id = $payment['id'];
-    $idUser = $payment['id_user'];
     $noIpl = $payment['username'];
     $buktiPembayaran = $payment['image'];
     $name = $payment['name'];
@@ -52,7 +51,7 @@ foreach ($data as $payment) {
             <td>$periode</td>
             <td id="status">$status</td>
             <td style="width: 55px;">
-                <button type="button" class="btn btn-primary btn-ipl-update" id="$idUser">Update</button>
+                <button type="button" class="btn btn-primary btn-ipl-update" id="$id">Update</button>
             </td>
         </tr>
     EOD;

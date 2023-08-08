@@ -70,7 +70,15 @@ class PaymenIplServiceImpl implements PaymentIplService
                     break;
             }
 
-            $resultSaveNotif = $this->saveNotif($id, $message);
+            // dapatkan id user
+            $query = 'SELECT id_user FROM tb_upload_ipl WHERE id = :id';
+            $this->db->query($query);
+            $this->db->bindData(':id', $id);
+            $idUser = $this->db->fetch()['id_user'];
+
+
+
+            $resultSaveNotif = $this->saveNotif($idUser, $message);
 
             if($resultSaveNotif == 'failed save notif') {
                 http_response_code(400);
@@ -82,7 +90,7 @@ class PaymenIplServiceImpl implements PaymentIplService
             //  Kirim notif firebase
             $query = 'SELECT token FROM tb_user_fcm_token WHERE id_user = :id';
             $this->db->query($query);
-            $this->db->bindData(':id', $id);
+            $this->db->bindData(':id', $idUser);
             $resultToken = $this->db->fetch();
 
             if($resultToken != null) {
