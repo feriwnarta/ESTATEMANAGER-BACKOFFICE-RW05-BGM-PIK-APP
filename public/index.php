@@ -1,5 +1,8 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Jakarta');
+
+
 
 use NextG\RwAdminApp\App\Router;
 use NextG\RwAdminApp\Controllers\AuthController;
@@ -29,7 +32,7 @@ Router::add('POST', '/save-employee', UserController::class, 'saveEmployee', [Au
 
 // Payment IPL
 Router::add('GET', '/payment-ipl', \NextG\RwAdminApp\Controllers\PaymentIplController::class, 'index', [AuthMiddleware::class]);
-Router::add('POST', '/update-payment', \NextG\RwAdminApp\Controllers\PaymentIplController::class, 'updatePayment', [AuthMiddleware::class]);
+Router::add('POST', '/update-payment', \NextG\RwAdminApp\Controllers\PaymentIplController::class, 'updatePayment', []);
 
 // Authorization
 Router::add('GET', '/auth', AuthController::class, 'authView', [AuthMiddleware::class]);

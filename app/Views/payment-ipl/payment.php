@@ -1,6 +1,7 @@
 <?php
 
 $root = \NextG\RwAdminApp\App\Configuration::$ROOT_APP;
+$rootAdmin = \NextG\RwAdminApp\App\Configuration::$ROOT;
 
 if ($data == 'data kosong') {
     echo $data;
@@ -18,8 +19,10 @@ $tableHeader =
         <th>No IPL</th>
         <th>Nama</th>
         <th>Bukti Pembayaran</th>
+        <th>Bukti Pengiriman</th>
         <th>Periode</th>
         <th>Status</th>
+        <th>Lokasi</th>
         <th>Action</th>
     </tr>
 </thead>
@@ -40,24 +43,50 @@ foreach ($data as $payment) {
     $id = $payment['id'];
     $noIpl = $payment['username'];
     $buktiPembayaran = $payment['image'];
+    $buktiPengiriman = $payment['delivery_proof'];
     $name = $payment['name'];
     $periode = $payment['periode'];
     $status = $payment['status'];
 
-    $tableData .=
-        <<<EOD
+    $latitude = $payment['latitude'];
+    $longitude = $payment['longitude'];
+    $apiMapsLoc = "https://www.google.com/maps/search/?api=1&query={$latitude},{$longitude}
+    ";
+
+    if ($buktiPengiriman != '') {
+
+        $tableData .=
+            <<<EOD
         <tr id="$id">
             <td>$noIpl</td>
             <td>$name</td>
             <td><a href="$root$buktiPembayaran" target="_blank">Bukti Pembayaran</a></td>
+            <td><a href="$rootAdmin$buktiPengiriman" target="_blank">Bukti Pengiriman</a></td>
             <td>$periode</td>
             <td id="status">$status</td>
+            <td><a href="$apiMapsLoc">Lokasi Pengiriman</a></td>
             <td style="width: 55px;">
                 <button type="button" class="btn btn-primary btn-ipl-update" id="$id">Update</button>
             </td>
         </tr>
     EOD;
-
+    } else {
+        $tableData .=
+            <<<EOD
+    <tr id="$id">
+        <td>$noIpl</td>
+        <td>$name</td>
+        <td><a href="$root$buktiPembayaran" target="_blank">Bukti Pembayaran</a></td>
+        <td>Kantong sampah belum terkirim</td>
+        <td>$periode</td>
+        <td id="status">$status</td>
+        <td><a href="$apiMapsLoc">Lokasi Pengiriman</a></td>
+        <td style="width: 55px;">
+            <button type="button" class="btn btn-primary btn-ipl-update" id="$id">Update</button>
+        </td>
+    </tr>
+EOD;
+    }
 }
 
 // format table

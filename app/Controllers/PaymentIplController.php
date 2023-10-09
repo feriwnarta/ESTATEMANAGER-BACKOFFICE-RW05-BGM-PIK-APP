@@ -3,7 +3,7 @@
 namespace NextG\RwAdminApp\Controllers;
 
 use NextG\RwAdminApp\App\View;
-use NextG\RwAdminApp\Services\PaymentIplServices\Impl\PaymenIplServiceImpl;
+use NextG\RwAdminApp\Services\PaymentIplServices\Impl\PaymentIplServiceImpl;
 use NextG\RwAdminApp\Services\PaymentIplServices\PaymentIplService;
 
 class PaymentIplController
@@ -16,35 +16,35 @@ class PaymentIplController
      */
     public function __construct()
     {
-        $this->paymentIplService = new PaymenIplServiceImpl();
+        $this->paymentIplService = new PaymentIplServiceImpl();
     }
 
 
-    public function index() {
+    public function index()
+    {
         $result = $this->paymentIplService->getData();
 
         View::render('layouts/app', 'payment-ipl/payment', $result);
-
     }
 
-    public function updatePayment() {
-        // json data
-        $json = file_get_contents('php://input');
-        $obj = json_decode($json, true);
+    public function updatePayment()
+    {
 
-        if(!isset($obj['id']) || !isset($obj['status'])) {
+        if (!isset($_POST['id']) || !isset($_POST['status']) || !isset($_POST['note'])) {
             echo  json_encode('data kosong');
             return;
         }
 
-        $id = $obj['id'];
-        $status = $obj['status'];
-        $note = $obj['note'];
+        $id = $_POST['id'];
+        $status = $_POST['status'];
+        $note = $_POST['note'];
+        $file = [];
 
-        $this->paymentIplService->update($id, $status, $note);
+        if (isset($_FILES['file'])) {
+            $file = $_FILES['file'];
+        }
 
 
-
+        $this->paymentIplService->update($id, $status, $note, $file);
     }
-
 }
